@@ -1,3 +1,2 @@
-load("eegsbchtm.RData")
-X=eegsbchtm
-y=c(rep(1,65),rep(0.57))
+X = read.table("data/X.txt")
+Y = read.table("data/y.txt")
