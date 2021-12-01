@@ -32,4 +32,14 @@ lambda_lasso <- cv_lasso_model$lambda.min
 plot(cv_lasso_model)
 ## Find optimal lasso regression model
 lasso_regression <- glmnet(Y ~ ., data = XY, alpha = 1, lambda = lambda_lasso)
-summary(ridge_regression)
+summary(lasso_regression)
+
+# Coefficients summary
+summary(linear_regression)$coefficients
+coef(ridge_regression)
+coef(lasso_regression)
+
+# Plots
+plot(linear_regression)
+plot(ridge_regression, xvar = "lambda")
+plot(lasso_regression, xvar = "lambda")
