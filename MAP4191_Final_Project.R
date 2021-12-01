@@ -1,5 +1,6 @@
 # Load required libraries
 library(glmnetUtils)
+library(caret)
 
 # Import data into list
 X <- read.table("data/X.txt")
@@ -40,6 +41,19 @@ coef(ridge_regression)
 coef(lasso_regression)
 
 # Plots
-plot(linear_regression)
-plot(ridge_regression, xvar = "lambda")
-plot(lasso_regression, xvar = "lambda")
+#plot(linear_regression, xvar="lambda")
+#plot(ridge_regression, xvar = "lambda")
+#plot(lasso_regression, xvar = "lambda")
+
+# Perform cross validation to evaluate regression models
+## Define number of folds
+fold_definition <- trainControl(method = "cv", number = 5)
+## Evaluate linear regression
+linear_model <- train(Y ~ ., data = XY, method = "lm", trControl = fold_definition)
+print(linear_model)
+## Evaluate ridge regression
+ridge_model <- train(Y ~ ., data = XY, method = "glmnet", alpha = 0, lamda = lambda_ridge, trControl = fold_definition)
+print(ridge_model)
+## Evaluate lasso regression
+lasso_model <- train(Y ~ ., data = XY, method = "glmnet", alpha = 1, lamda = lambda_lasso, trControl = fold_definition)
+print(lasso_model)
