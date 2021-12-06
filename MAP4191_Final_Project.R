@@ -2,6 +2,12 @@
 library(glmnetUtils)
 library(caret)
 
+# Enable multi-threading to speed up training
+library(parallel)
+library(doParallel)
+cluster <- makeCluster(detectCores() - 1)
+registerDoParallel(cluster)
+
 # Import data into list
 X <- read.table("data/X.txt")
 Y <- read.table("data/y.txt")$V1
@@ -40,20 +46,19 @@ summary(linear_regression)$coefficients
 coef(ridge_regression)
 coef(lasso_regression)
 
-# Plots
-#plot(linear_regression, xvar="lambda")
-#plot(ridge_regression, xvar = "lambda")
-#plot(lasso_regression, xvar = "lambda")
-
 # Perform cross validation to evaluate regression models
 ## Define number of folds
-fold_definition <- trainControl(method = "cv", number = 5)
+fold_definition <- trainControl(method = "cv", number = 5, allowParallel = TRUE)
 ## Evaluate linear regression
 linear_model <- train(Y ~ ., data = XY, method = "lm", trControl = fold_definition)
 print(linear_model)
 ## Evaluate ridge regression
-ridge_model <- train(Y ~ ., data = XY, method = "glmnet", alpha = 0, lamda = lambda_ridge, trControl = fold_definition)
+ridge_model <- train(Y ~ .,data = XY, method = "ridge", trControl = fold_definition)
 print(ridge_model)
 ## Evaluate lasso regression
-lasso_model <- train(Y ~ ., data = XY, method = "glmnet", alpha = 1, lamda = lambda_lasso, trControl = fold_definition)
+lasso_model <- train(Y ~ ., data = XY, method = "lasso", trControl = fold_definition)
 print(lasso_model)
+
+# Deregister cluster for multi-threading
+stopCluster(cluster)
+registerDoSEQ()
